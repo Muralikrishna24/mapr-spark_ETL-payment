@@ -55,6 +55,8 @@ object ETLPayment {
     spark.sql("select physician_specialty, count(*) as cnt, sum(amount)as total from payments group by physician_specialty order by total desc").show()
 
     ds.filter($"amount" > 1000).show()
+    
+    //commenting the lines as we are not using MapRDBSpark
     /*ds.groupBy("Nature_of_payment").count().orderBy(desc("count")).show()
 
     val ordd = ds.map(createPaymentwId).toJSON.rdd.map(MapRDBSpark.newDocument)
