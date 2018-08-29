@@ -30,14 +30,15 @@ object ETLPayment {
 
   def main(args: Array[String]) {
 
-    var pfile = "/user/user01/data/payments.csv"
+    var pfile = "file:///C:/Users/mukalaha/git/Local_mapr-spark-payment/mapr-spark-payment/data/payments.csv"
     if (args.length == 1) {
       pfile = args(0)
     } else {
       System.out.println("Using hard coded parameters unless you specify the publish topic. For example  /user/user01/stream:flightp ")
     }
 
-    val spark: SparkSession = SparkSession.builder().appName("payment").getOrCreate()
+    System.setProperty("hadoop.home.dir", "C:\\murali\\HadoopOnWindows\\Hadoop");
+    val spark: SparkSession = SparkSession.builder().appName("payment").master("local").getOrCreate()
 
     val toDouble = udf[Double, String](_.toDouble)
     val df = spark.read.option("header", "true").csv(pfile)
@@ -54,13 +55,13 @@ object ETLPayment {
     spark.sql("select physician_specialty, count(*) as cnt, sum(amount)as total from payments group by physician_specialty order by total desc").show()
 
     ds.filter($"amount" > 1000).show()
-    ds.groupBy("Nature_of_payment").count().orderBy(desc("count")).show()
+    /*ds.groupBy("Nature_of_payment").count().orderBy(desc("count")).show()
 
     val ordd = ds.map(createPaymentwId).toJSON.rdd.map(MapRDBSpark.newDocument)
     ordd.take(3).foreach(println)
-    ordd.saveToMapRDB("/user/user01/testtable2", createTable = true, idFieldPath = "_id")
+    ordd.saveToMapRDB("file:///C:/Users/mukalaha/git/Local_mapr-spark-payment/mapr-spark-payment/data/payment_out", createTable = true, idFieldPath = "_id")
 
-    val prdd = spark.sparkContext.loadFromMapRDB("/user/user01/testtable2").where(field("physician_id") === "214250")
-    prdd.collect().foreach(println(_))
+    val prdd = spark.sparkContext.loadFromMapRDB("file:///C:/Users/mukalaha/git/Local_mapr-spark-payment/mapr-spark-payment/data/payment_out").where(field("physician_id") === "214250")
+    prdd.collect().foreach(println(_))*/
   }
 }
